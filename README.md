@@ -1,3 +1,6 @@
+# PTAR SYSTEM
+
+```text
 PTAR SYSTEM
 │
 ├── Inicio
@@ -15,3 +18,4 @@ PTAR SYSTEM
 ├── Reportes
 ├── Usuarios
 └── Acerca del Sistema
+```
