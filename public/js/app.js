@@ -1,0 +1,282 @@
+
+            let muestras = [];
+            document.getElementById('formulario')
+
+                .addEventListener('submit', async (e) => {
+
+                    e.preventDefault();
+
+                    const datos = {
+
+                        fecha: document.getElementById('fecha').value,
+                        hora: document.getElementById('hora').value,
+                        punto: document.getElementById('punto').value,
+                        responsable: document.getElementById('responsable').value,
+
+                        ph: document.getElementById('ph').value,
+                        temperatura: document.getElementById('temperatura').value,
+                        conductividad: document.getElementById('conductividad').value,
+                        dbo: document.getElementById('dbo').value,
+                        dqo: document.getElementById('dqo').value,
+                        sst: document.getElementById('sst').value,
+                        turbidez: document.getElementById('turbidez').value
+
+                    };
+
+                    const respuesta = await fetch('/guardar', {
+
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+
+                        body: JSON.stringify(datos)
+
+                    });
+
+                    const resultado = await respuesta.text();
+
+                    alert(resultado);
+
+                    cargarMuestras();
+
+                });
+
+            async function cargarMuestras() {
+
+                const respuesta = await fetch('/muestras');
+
+                muestras = await respuesta.json();
+
+                const datos = muestras;
+
+                let alertas = datos.filter(
+                    m => m.ph < 6 || m.ph > 9
+                ).length;
+
+                document.getElementById('totalMuestras').innerText = datos.length;
+
+                document.getElementById('totalAlertas').innerText = alertas;
+
+                if (alertas > 0) {
+
+                    document.getElementById('estadoPTAR')
+                        .innerText = 'Alerta';
+
+                } else {
+
+                    document.getElementById('estadoPTAR')
+                        .innerText = 'Óptimo';
+
+                }
+
+                const tbody = document.querySelector('#tabla tbody');
+
+                tbody.innerHTML = '';
+
+                datos.forEach(m => {
+
+                    const fechaFormateada =
+                        new Date(m.fecha).toLocaleDateString('es-PE');
+
+                    const horaFormateada =
+                        m.hora.substring(11, 16);
+
+                    tbody.innerHTML += `
+                                <tr>
+                                    <td>${m.id}</td>
+                                    <td>${fechaFormateada}</td>
+                                    <td>${horaFormateada}</td>
+                                    <td>${m.punto_muestreo}</td>
+                                    <td>${m.responsable}</td>
+
+                                    <td>${m.ph}</td>
+                                    <td>${m.temperatura}</td>
+                                    <td>${m.conductividad}</td>
+
+                                    <td>${m.dbo}</td>
+                                    <td>${m.dqo}</td>
+                                    <td>${m.sst}</td>
+
+                                    <td>${m.turbidez}</td>
+
+                                    <td>
+                                        <button
+                                        class="btn btn-danger"
+                                        onclick="eliminarMuestra(${m.id})">
+                                        Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+
+                });
+
+                const labels = datos.map(m => m.id);
+
+                const phData =
+                    datos.map(m => m.ph);
+
+                const temperaturaData =
+                    datos.map(m => m.temperatura);
+
+                const turbidezData =
+                    datos.map(m => m.turbidez);
+
+                const ctx =
+                    document.getElementById('graficoGeneral');
+
+                new Chart(ctx, {
+
+                    type: 'line',
+
+                    data: {
+
+                        labels: labels,
+
+                        datasets: [
+
+                            {
+
+                                label: 'pH',
+
+                                data: phData,
+
+                                borderWidth: 3
+
+                            },
+
+                            {
+
+                                label: 'Temperatura',
+
+                                data: temperaturaData,
+
+                                borderWidth: 3
+
+                            },
+
+                            {
+
+                                label: 'Turbidez',
+
+                                data: turbidezData,
+
+                                borderWidth: 3
+
+                            }
+
+                        ]
+
+                    },
+
+                    options: {
+
+                        responsive: true
+
+                    }
+
+                });
+
+            }
+
+            function buscarPorFecha() {
+
+                const fecha =
+                    document.getElementById("fechaBusqueda").value;
+
+                const filtrados = muestras.filter(m => {
+
+                    const fechaRegistro =
+                        m.fecha.split("T")[0];
+
+                    return fechaRegistro === fecha;
+
+                });
+
+                mostrarMuestras(filtrados);
+
+            }
+
+            cargarMuestras();
+
+            window.eliminarMuestra = async function (id) {
+
+                try {
+
+                    const respuesta = await fetch(
+                        'http://localhost:3000/eliminar/' + id,
+                        {
+                            method: 'DELETE'
+                        }
+                    );
+
+                    const resultado = await respuesta.text();
+
+                    alert(resultado);
+
+                    cargarMuestras();
+
+                } catch (error) {
+
+                    console.log(error);
+
+                    alert("Error al eliminar");
+
+                }
+
+            }
+
+            function mostrarMuestras(datos) {
+
+                const tbody =
+                    document.querySelector('#tabla tbody');
+
+                tbody.innerHTML = '';
+
+                datos.forEach(m => {
+
+                    tbody.innerHTML += `
+                            <tr>
+                                <td>${m.id}</td>
+                                <td>${m.fecha}</td>
+                                <td>${m.hora}</td>
+                                <td>${m.punto_muestreo}</td>
+                                <td>${m.responsable}</td>
+                                <td>${m.ph}</td>
+                                <td>${m.temperatura}</td>
+                                <td>${m.turbidez}</td>
+                            </tr>
+                            `;
+
+                });
+
+            }
+
+            function mostrarInicio() {
+
+                document.getElementById("inicioSection").style.display = "block";
+                document.getElementById("muestreoSection").style.display = "none";
+                document.getElementById("monitoreoSection").style.display = "none";
+
+            }
+
+            function mostrarMuestreo() {
+
+                document.getElementById("inicioSection").style.display = "none";
+                document.getElementById("muestreoSection").style.display = "block";
+                document.getElementById("monitoreoSection").style.display = "none";
+
+            }
+
+            function mostrarMonitoreo() {
+
+                document.getElementById("inicioSection").style.display = "none";
+                document.getElementById("muestreoSection").style.display = "none";
+                document.getElementById("monitoreoSection").style.display = "block";
+
+                cargarMuestras();
+            }
+
+            mostrarInicio();
