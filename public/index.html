@@ -124,14 +124,16 @@
                 Monitoreo de Parámetros
             </a>
 
-            <a href="#">
+            <a href="#" onclick="mostrarReportes()">
                 <i class="fa fa-file"></i>
                 Reportes
             </a>
 
-            <a href="#">
+            <a href="#" onclick="mostrarUsuarios()">
                 <i class="fa fa-users"></i>
+                
                 Usuarios
+
             </a>
 
             <a href="#">
@@ -150,7 +152,7 @@
 
         <div class="content">
 
-            <h2 class="mb-4">Inicio</h2>
+            <h2 class="mb-4" id="tituloPagina">Inicio</h2>
 
             <div id="inicioSection">
 
@@ -344,12 +346,205 @@
                 </div>
 
             </div>
+            <div id="reportesSection" style="display:none;">
+
+                <div class="card p-4 shadow">
+
+                    <h4>Generación de Reportes</h4>
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            <label>Fecha Inicio</label>
+                            <input type="date" id="fechaInicio" class="form-control">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Fecha Fin</label>
+                            <input type="date" id="fechaFin" class="form-control">
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <label>Punto de Muestreo</label>
+
+                            <select id="puntoReporte" class="form-control">
+
+                                <option value="">Todos los puntos</option>
+
+                                <option>Afluente</option>
+                                <option>Cámara de reunión CR-1</option>
+                                <option>Sedimentador Primario 1</option>
+                                <option>Sedimentador Primario 2</option>
+                                <option>Cámara de reunión Sedimentadores Primarios CR-3</option>
+                                <option>Filtro Percolador Primario 1</option>
+                                <option>Filtro Percolador Primario 2</option>
+                                <option>Filtro Percolador Primario 3</option>
+                                <option>Cámara de reunión de Filtros Percoladores Primarios CR-7</option>
+                                <option>Filtro Percolador Secundario 1</option>
+                                <option>Filtro Percolador Secundario 2</option>
+                                <option>Cámara de reunión de Filtros Percoladores Secund. CR-5</option>
+                                <option>Sedimentador Secundario 1</option>
+                                <option>Sedimentador Secundario 2</option>
+                                <option>Cámara de contacto de Cloro</option>
+                                <option>Efluente</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-3">
+
+                        <button class="btn btn-primary" onclick="buscarReportes()">
+
+                            Buscar
+
+                        </button>
+
+                        <button class="btn btn-success" onclick="exportarExcel()">
+                            Exportar Excel
+
+                        </button>
+
+                        <button class="btn btn-danger">
+                            Exportar PDF
+                        </button>
+
+                    </div>
+
+                    <div class="mt-4">
+
+                        <h5>Resultados del Reporte</h5>
+
+                        <div class="table-responsive">
+
+                            <table class="table table-striped" id="tablaReporte">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>Fecha</th>
+                                        <th>Punto</th>
+                                        <th>pH</th>
+                                        <th>Temperatura</th>
+                                        <th>Conductividad</th>
+                                        <th>DBO</th>
+                                        <th>DQO</th>
+                                        <th>SST</th>
+                                        <th>Turbidez</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div id="usuariosSection" style="display:none;">
+
+                <div class="card p-4 shadow">
+
+                    <h4>Gestión de Usuarios</h4>
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <label>Usuario</label>
+
+                            <input type="text" id="usuarioNuevo" class="form-control">
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <label>Contraseña</label>
+
+                            <input type="password" id="passwordNuevo" class="form-control">
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <label>Rol</label>
+
+                            <select id="rolNuevo" class="form-control">
+
+                                <option>Administrador</option>
+                                <option>Operador</option>
+                                <option>Supervisor</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-3">
+
+                        <button class="btn btn-success">
+
+                            Guardar Usuario
+
+                        </button>
+
+                    </div>
+
+                    <div class="mt-4">
+
+                        <h5>Lista de Usuarios</h5>
+
+                        <table class="table table-striped" id="tablaUsuarios">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>ID</th>
+                                    <th>Usuario</th>
+                                    <th>Rol</th>
+                                    <th>Acciones</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
         </div>
 
     </div>
 
-    <script src="js/app.js"></script>
 
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="js/app.js"></script>
     <script type="module" src="firebase.js"></script>
 </body>
 

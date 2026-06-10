@@ -22,12 +22,12 @@ const config = {
 
 // CONEXIÓN SQL SERVER
 sql.connect(config)
-.then(() => {
-    console.log("Conectado a SQL Server");
-})
-.catch(err => {
-    console.log("Error de conexión:", err);
-});
+    .then(() => {
+        console.log("Conectado a SQL Server");
+    })
+    .catch(err => {
+        console.log("Error de conexión:", err);
+    });
 
 // RUTA PRINCIPAL
 app.get('/', (req, res) => {
@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 // GUARDAR DATOS
 app.post('/guardar', async (req, res) => {
 
-        const {
+    const {
 
         fecha,
         hora,
@@ -51,7 +51,7 @@ app.post('/guardar', async (req, res) => {
         sst,
         turbidez
 
-        } = req.body;
+    } = req.body;
     try {
 
         await sql.query`
@@ -119,32 +119,91 @@ app.get('/muestras', async (req, res) => {
 
 });
 
+// OBTENER USUARIOS
 
-// ELIMINAR MUESTRA
+app.get('/usuarios', async (req, res) => {
 
-app.delete('/eliminar/:id',
-async (req, res) => {
+    try {
 
-    const id = req.params.id;
-
-    try{
-
-        await sql.query`
-            DELETE FROM muestras
-            WHERE id = ${id}
+        const resultado = await sql.query`
+            SELECT * FROM usuarios
+            ORDER BY id DESC
         `;
 
-        res.send("Muestra eliminada");
+        res.json(resultado.recordset);
 
-    }catch(error){
+    } catch (error) {
 
         console.log(error);
 
-        res.send("Error al eliminar");
+        res.send("Error al obtener usuarios");
 
     }
 
 });
+
+
+// GUARDAR USUARIO
+
+app.post('/guardarUsuario', async (req, res) => {
+
+    const {
+        usuario,
+        password,
+        rol
+    } = req.body;
+
+    try {
+
+        await sql.query`
+            INSERT INTO usuarios(
+                usuario,
+                password,
+                rol
+            )
+            VALUES(
+                ${usuario},
+                ${password},
+                ${rol}
+            )
+        `;
+
+        res.send("Usuario guardado correctamente");
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.send("Error al guardar usuario");
+
+    }
+
+});
+// ELIMINAR MUESTRA
+
+app.delete('/eliminar/:id',
+    async (req, res) => {
+
+        const id = req.params.id;
+
+        try {
+
+            await sql.query`
+            DELETE FROM muestras
+            WHERE id = ${id}
+        `;
+
+            res.send("Muestra eliminada");
+
+        } catch (error) {
+
+            console.log(error);
+
+            res.send("Error al eliminar");
+
+        }
+
+    });
 
 
 // SERVIDOR
